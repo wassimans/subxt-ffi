@@ -11,14 +11,13 @@ libname = "libsubxt_ffi.dylib"
 # On Windows:
 # libname = "subxt_ffi.dll"
 
-# If not in a system path, add your build output dir:
+# If not in a system path, add your build output dir
 sys.path.append("target/debug")  # or "target/release"
 BUILD_DIR = os.path.join(os.path.dirname(__file__), "..", "target", "debug")
 lib_path = os.path.join(BUILD_DIR, libname)
 lib = ctypes.CDLL(lib_path)
 
-# Tell ctypes about our function signature:
-# extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32
+# Tell ctypes about our function signature, the one we defined in the Rust library
 lib.do_transfer.argtypes = (c_char_p, c_uint64)
 lib.do_transfer.restype  = c_int
 
@@ -35,7 +34,7 @@ def do_transfer(dest_hex: str, amount: int) -> int:
 
 if __name__ == "__main__":
     # example usage
-    dest = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"   # your hex account
+    dest = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"
     amt  = 1_000_000_000_000
     code = do_transfer(dest, amt)
     if code == 0:

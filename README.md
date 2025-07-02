@@ -1,6 +1,6 @@
 # subxt-ffi
 
-This example shows how to expose a small piece of Subxt functionality—here, a single balance-transfer call—as a native C-ABI library, consumable from Python and Node.js.
+This example shows how to expose a small piece of Subxt functionality, in our case, a single balance-transfer call, as a native C-ABI library, consumable from Python and Node.js.
 
 ## Overview
 
@@ -46,13 +46,14 @@ which does a single balance transfer and returns 0 on success, –1 on error.
 - Rust toolchain (with cargo)
 - Python 3
 - Node.js (for the JS example)
-- A running Substrate node (Polkadot) on ws://127.0.0.1:8000. We recommend using Chopsticks for a quick local Polkadot:
+- A running Substrate node (Polkadot) on ws://127.0.0.1:8000. We recommend using Chopsticks for a quick local Polkadot node:
 
 ```shell
 npx @acala-network/chopsticks \
   --config=https://raw.githubusercontent.com/AcalaNetwork/chopsticks/master/configs/polkadot.yml
 
 ```
+- In our Python and Javascript files, we introduce a **dest** variable that represents the destination account for the transfer, we gave it a hard coded value (Bob's account public key) from the running Chopsticks node. Feel free to change it to any other account, or better yet, make it generic!
 
 ## Building
 
@@ -67,12 +68,14 @@ This will produce a dynamic library in target/debug/ (or target/release/ if you 
 - Linux:  libsubxt_ffi.so
 - Windows: subxt_ffi.dll
 
+To run the example files (main.py and main.js) on **Windows**, just copy the **dll** file to the folder where **main** files are.
+
 
 ## Running
 
 ### Python
 
-# on macOS / Linux
+#### on macOS / Linux
 
 ```shell
 export LD_LIBRARY_PATH=$PWD/target/debug  # or DYLD_LIBRARY_PATH on macOS
@@ -85,7 +88,7 @@ Expected output:
 
 ### Node.js
 
-# install npm dependencies
+#### Install npm dependencies
 In the root of the project run:
 
 ```shell
@@ -104,9 +107,9 @@ Expected output:
 ✓ transfer succeeded
 
 # Development notes
-	•	Hex handling: We strip an optional 0x prefix and decode into 32 bytes.
-	•	FFI safety: We only pass pointers and primitive types (u64, i32) across the boundary.
-	•	Error codes: We return 0 on success, -1 on any kind of failure (decode error, RPC error, etc.).
-	•	You can extend this facade crate with any additional functions you need—just expose them as pub extern "C" and follow the same pattern.
+- Hex handling: We strip an optional 0x prefix and decode into 32 bytes.
+- FFI safety: We only pass pointers and primitive types (u64, i32) across the boundary.
+- Error codes: We return 0 on success, -1 on any kind of failure (decode error, RPC error, etc.).
+- You can extend this facade crate with any additional functions you need—just expose them as pub extern "C" and follow the same pattern.
 
 Feel free to fork, experiment, and drop in more methods behind this simple C-ABI façade!

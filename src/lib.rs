@@ -14,27 +14,30 @@ fn tokio_rt() -> &'static Runtime {
 }
 
 /// A simple C‐ABI function to transfer `amount` to a hex‐encoded `dest`.
-/// Assumes your node’s WS endpoint is at ws://127.0.0.1:9944
+/// Assumes a running node’s WS endpoint is at ws://127.0.0.1:8000
 #[unsafe(no_mangle)]
 pub extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32 {
     let amount = amount as u128;
-    // 1) Convert C string to Rust str
+    // We need to convert C string to Rust str
     let raw_s = unsafe { CStr::from_ptr(dest_hex).to_str().unwrap_or_default() };
-    // 1b) Strip optional 0x prefix
+
+    // Strip optional 0x prefix
     let s = raw_s.strip_prefix("0x").unwrap_or(raw_s);
-    // 2) Decode hex, force 32‐byte AccountId
+
+    // Decode hex, force a 32‐byte AccountId
     let raw = decode(s).expect("hex decode");
     let arr: [u8; 32] = raw.as_slice().try_into().expect("must be 32 bytes");
+
     // Wrap into a MultiAddress::Id variant for dynamic calls:
     let dst = Value::variant(
         "Id",
         Composite::unnamed(vec![
-            // scale‐encode the raw 32‐bytes
+            // scale encode
             Value::from_bytes(arr.to_vec()),
         ]),
     );
 
-    // 3) Spin up (or reuse) our Tokio runtime and connect:
+    // Spin up (or reuse) our Tokio runtime and connect:
     let client = tokio_rt().block_on(async {
         OnlineClient::<PolkadotConfig>::from_url("ws://127.0.0.1:8000")
             .await
@@ -42,7 +45,7 @@ pub extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32 {
     });
     let signer = dev::alice();
 
-    // 4) Build the dynamic‐metadata extrinsic:
+    // Build the dynamic metadata extrinsic:
     let tx = dynamic_call(
         "Balances",
         "transfer_keep_alive",
@@ -53,7 +56,7 @@ pub extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32 {
         ],
     );
 
-    // 5) Submit & wait for finalize
+    // Submit and wait for finalize
     let res: Result<_, subxt::Error> = tokio_rt().block_on(async {
         let progress = client
             .tx()
@@ -62,7 +65,7 @@ pub extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32 {
         progress.wait_for_finalized_success().await
     });
 
-    // 6) return code
+    // Return code
     match res {
         Ok(_) => 0,
         Err(e) => {

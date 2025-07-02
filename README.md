@@ -13,25 +13,32 @@ This example shows how to expose a small piece of Subxt functionality—here, a 
 ```mermaid
 flowchart LR
   subgraph Rust side
-    A[Subxt Public API]
-    B[Facade crate (subxt-ffi)]
-    C[Substrate Node RPC]
-    D[C ABI library]
-    A --> B
-    B --> C
-    B --> D
+    subxt[Subxt Public API]
+    facade[Facade crate]
+    node[Substrate node]
+    cabi[C ABI library]
+    subxt --> facade
+    facade --> node
+    facade --> cabi
   end
 
   subgraph Client side
-    P[Python client]
-    J[Node.js client]
-    P --> D
-    J --> D
+    swift[Swift client]
+    python[Python client]
+    kotlin[Kotlin client]
+    js[JavaScript client]
+    swift --> cabi
+    python --> cabi
+    kotlin --> cabi
+    js --> cabi
   end
+```
 
 Our one example function is:
 
+```rust
 pub extern "C" fn do_transfer(dest_hex: *const c_char, amount: u64) -> i32
+```
 
 which does a single balance transfer and returns 0 on success, –1 on error.
 

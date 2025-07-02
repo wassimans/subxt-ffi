@@ -33,4 +33,22 @@ flowchart LR
     js --> cabi
   end
 ```
+To build the project and produce the libraries run:
+
+cargo build
+
+which will produce a library in target/debug/. The exact filename depends on your platform:
+
+
+Windows: libsubxt_ffi.dll
+OS X: libsubxt_ffi.dylib
+Linux: libsubxt_ffi.so
+
+For the purpose of our example, we'll target Python3 via its ctypes library, and Nodejs via its ffi-napi package.
+
+In our examples, we will hardcode the path to the resulting Rust dynamic libraries, but a more generic way would be to define a specific environment variable. On most Linux based systems it's LD_LIBRARY_PATH=$PWD/target/debug, and DYLD_LIBRARY_PATH=$PWD/target/debug for macOS. On Windows, just copy the compiled dynamic library (.dll) into the current working directory before running the examples.
+
+To run the example for Python: python3 src/main.py
+For Nodejs: node src/main.js
+
 

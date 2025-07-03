@@ -113,7 +113,7 @@ Expected output:
 - You can extend this facade crate with any additional functions you need—just expose them as pub extern "C" and follow the same pattern.
 
 # Limitations
-Translating a complex Rust API like Subxt to a bare bones C ABI ready to be consumed by foreign languages has its limits. Here's a few of them:
+Translating a complex Rust API like Subxt to a bare bones C ABI ready to be consumed by foreign languages has its limitations. Here's a few of them:
 
 - Complex types (strings, structs) require to design C-safe representations.
 - Only C primitive types (integers, pointers) are FFI-safe; anything else must translated.

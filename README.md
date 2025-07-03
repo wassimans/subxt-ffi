@@ -116,7 +116,7 @@ Expected output:
 Translating a complex Rust API like Subxt to a bare bones C ABI ready to be consumed by foreign languages has its limitations. Here's a few of them:
 
 - Complex types (strings, structs) require to design C-safe representations.
-- Only C primitive types (integers, pointers) are FFI-safe; anything else must translated.
-- Manual memory management glue code is needed if the Rust code return owned data.
+- Only C primitive types (integers, pointers) are FFI-safe; anything else must be translated.
+- Manual memory management glue code is needed if owned data is returned.
 - Needs a manual translation to every foreign language we export to, every time the Rust library changes.
 

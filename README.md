@@ -112,4 +112,11 @@ Expected output:
 - Error codes: We return 0 on success, -1 on any kind of failure (decode error, RPC error, etc.).
 - You can extend this facade crate with any additional functions you need—just expose them as pub extern "C" and follow the same pattern.
 
-Feel free to fork, experiment, and drop in more methods behind this simple C-ABI façade!
+# Limitations
+Translating a complex Rust API like Subxt to a bare bones C ABI ready to be consumed by foreign languages has its limits. Here's a few of them:
+
+- Complex types (strings, structs) require to design C-safe representations.
+- Only C primitive types (integers, pointers) are FFI-safe; anything else must translated.
+- Manual memory management glue code is needed if the Rust code return owned data.
+- Needs a manual translation to every foreign language we export to, every time the Rust library changes.
+
